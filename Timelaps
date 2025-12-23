@@ -1,0 +1,166 @@
+Absolutely, Andrus — here is a **clean, chronological, copy‑paste‑ready summary** of *everything you did*, including PuTTY steps, commands, file edits, and what you copied.  
+This is the exact recipe that made Moonraker‑Timelapse work on your Sovol SV07 Plus.
+
+---
+
+# 🧩 **Full Step‑By‑Step Summary: Installing Moonraker‑Timelapse on Sovol SV07 Plus**
+
+Below is the complete process in the order you actually performed it.
+
+---
+
+# 🟦 1. **Connected to the printer using PuTTY**
+- Entered the printer’s IP address  
+- Logged in as:
+
+```
+username: mks
+password: makerbase
+```
+
+(You started as root, but the working user was `mks`.)
+
+---
+
+# 🟦 2. **Cloned the timelapse repository**
+You moved into your home directory and cloned the repo:
+
+```
+cd /home/mks
+git clone https://github.com/mainsail-crew/moonraker-timelapse.git
+```
+
+---
+
+# 🟦 3. **Found the installer script**
+You checked the folder:
+
+```
+ls -la /home/mks/moonraker-timelapse
+```
+
+The installer was inside:
+
+```
+/home/mks/moonraker-timelapse/scripts/install.sh
+```
+
+---
+
+# 🟦 4. **Installer refused to run**
+The script exited with:
+
+```
+YOU DON'T NEED TO RUN INSTALLER AS ROOT!
+```
+
+And when forced, it tried to use `apt`, which fails on Sovol firmware.
+
+So the installer could not be used.
+
+---
+
+# 🟦 5. **Manually installed the plugin (the correct method)**
+
+### ✔️ Step into the component folder:
+
+```
+cd /home/mks/moonraker-timelapse/component
+ls
+```
+
+You saw:
+
+```
+timelapse.py
+```
+
+### ✔️ Copy the plugin into Moonraker’s components directory:
+
+```
+cp /home/mks/moonraker-timelapse/component/timelapse.py /home/mks/moonraker/moonraker/components/
+```
+
+### ✔️ Verify it:
+
+```
+ls /home/mks/moonraker/moonraker/components
+```
+
+You now saw:
+
+```
+timelapse.py
+```
+
+---
+
+# 🟦 6. **Restarted Moonraker**
+
+```
+systemctl restart moonraker
+```
+
+---
+
+# 🟦 7. **Checked logs to confirm plugin loaded**
+
+```
+grep -n "timelapse" /home/mks/printer_data/logs/moonraker.log
+```
+
+The log showed:
+
+```
+Component (timelapse) loaded
+```
+
+This confirmed the plugin was active.
+
+---
+
+# 🟦 8. **Fixed the config warning**
+You opened the Moonraker config:
+
+```
+nano /home/mks/printer_data/config/moonraker.conf
+```
+
+Inside nano:
+
+- **CTRL+O** → save  
+- **ENTER** → confirm  
+- **CTRL+X** → exit  
+
+You removed the unsupported line:
+
+```
+frame_rate: 30
+```
+
+Leaving:
+
+```
+[timelapse]
+output_path: ~/printer_data/timelapse/
+```
+
+Restarted Moonraker again:
+
+```
+systemctl restart moonraker
+```
+
+---
+
+# 🟦 9. **Result**
+- The **Timelapse** menu appeared in Fluidd  
+- The plugin loaded cleanly  
+- The printer ran normally  
+- No apt updates, no OS modifications, no risk  
+
+You now have a fully working timelapse system on Sovol’s locked-down firmware.
+
+---
+
+If you want, I can also help you set up your camera or test your first timelapse.
